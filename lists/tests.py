@@ -1,8 +1,8 @@
-from django.urls import resolve
+# from django.urls import resolve
 from django.test import TestCase
-from django.http import HttpRequest
-from django.template.loader import render_to_string
-from lists.views import home_page
+# from django.http import HttpRequest
+# from django.template.loader import render_to_string
+# from lists.views import home_page
 
 
 # Create your tests here.
@@ -13,7 +13,7 @@ class HomePageTest(TestCase):
     #     self.assertEqual(found.func, home_page)
 
     def test_page_returns_correct_html(self):
-        request = HttpRequest()
+        # request = HttpRequest()
         # response = home_page(request)
         response = self.client.get('/')
         html = response.content.decode('utf8')
