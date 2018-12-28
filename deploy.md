@@ -148,6 +148,8 @@ Clone github repository onto your EC2 instance to keep your code and compure res
 2. in `<app>/settings.py` change `ALLOWED_HOSTS = ['*']`
 3. Migrate database `python manage.py migrate --noinput`
 
+# Settings for Production
+
 ## 9. Set up Nginx and Gunicorn
 1. Install Nginx on Server
 
@@ -240,6 +242,9 @@ Can remove default 'Welcome to Nginx config' to avoid confusion:
   sudo systemctl reload nginx
   gunicorn --bind \ unix:/tmp/staging.engmatthew.com.socket superlists.wsgi:application
   ```
+
+## 12. Change Django settings for production
+Todo
 
 ## 11. Managing sessions with Tmux
 ```bash
