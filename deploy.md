@@ -7,6 +7,8 @@ Use [these instructions](https://github.com/gschool/dsi-project-proposals/blob/m
 * Set up environment on your EC2 instance
 * Push your code to github
 * SSH into the instance and clone your repo
+* Set up Nginx
+* Switch to Gunicorn
 * Run Django app on instance
 
 ## 1. Set up AWS EC2 instance
@@ -31,8 +33,8 @@ Background on using AWS can be found [here](https://docs.google.com/presentation
 7. Move .pem file to ~/.ssh/ and change the permissions of your key-pair with this command:
 
     ```bash
-    $mv <something>.pem ~/.ssh/<something>.pem
-    $chmod 400 <something>.pem
+    mv <something>.pem ~/.ssh/<something>.pem
+    chmod 400 <something>.pem
     ```
 
 ## 2. Add HTTP Access
@@ -56,7 +58,7 @@ It will be nice to not need to check on the IP address of your instance every ti
 
 3. Once you get the address, select it, click on `Actions` and choose "Associate Address". Click in the "Instance" box, and choose your instance.
 
-### Connect to instance
+## 4. Connect to instance
 SSH can be used to access a remote machine via the terminal. SSH can be used between any 2 computers as long as ssh-server and ssh-client are installed and machines are reachable via internet.
 
 SSH is used with either public-private key encryption or a password (less secure). With public-private key encryption:
@@ -69,13 +71,14 @@ To set up a key pair:
 - Store private keys on every computer you want to use to access the remote resource
 - Set permissions of key file on computer:
 
-```bash
-$chmod 400 ~/.ssh/private_key.pem
-```
+  ```bash
+  chmod 400 ~/.ssh/private_key.pem
+  ```
 
 To ssh into instance:
-```bash
-$ssh -i ~/.keys/key-pair.pem -X -o TCPKeepAlive=yes ubuntu@ec2=123.456.78.9
+
+  ```bash
+  ssh -i ~/.keys/key-pair.pem -X -o TCPKeepAlive=yes ubuntu@ec2=123.456.78.9
 ```
 
 - You can create an alias ssh config for frequently accessed instances
@@ -93,8 +96,8 @@ Host ec2_instance1
 
 Accessed by
 
-```bash
-$ssh ec_instance1
+  ```bash
+  ssh ec_instance1
 ```
 
 ## 5. Set up environment
@@ -106,25 +109,26 @@ You use `ssh` (secure shell) to connect to your machine. You will then be in the
 3. `conda` or `pip` install whatever other libraries your app needs to run. Create a `conda` environment if needed.
 
   ```bash
-  $conda create -n <env-name> python=3.6
-  $source activate <env-name>
-  $conda install django>=2.1.2
-  $conda install --yes --file requirements.txt
+  conda create -n <env-name> python=3.6
+  source activate <env-name>
+  conda install django>=2.1.2
+  conda install --yes --file requirements.txt
   ```
 
 4. Install any programs you are using (like git):
-    ```
+
+    ```bash
     sudo apt-get update
     sudo apt-get install git
     ```
 
-### 6. Set up ports
+## 6. Set up ports
 Run the following line of code at the command line on the instance:
 
-```
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-sudo apt-get install iptables-persistent
-```
+  ```bash
+  sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  sudo apt-get install iptables-persistent
+  ```
 
 The first line forwards requests at port 80 to port 8000. This is important.
 
@@ -148,8 +152,8 @@ Clone github repository onto your EC2 instance to keep your code and compure res
 1. Install Nginx on Server
 
   ```bash
-  $sudo apt install nginx
-  $sudo systemctl start nginx OR $sudo service nginx start
+  sudo apt install nginx
+  sudo systemctl start nginx OR $sudo service nginx start
   ```
 
 2. You should now be able to go to the URL address and see a Welcome to Nginx page. If not, you may need to configure your AWS security group to allow the server to open on port 80 and relaunch the instance to ensure it has taken affect.
@@ -193,9 +197,11 @@ Can remove default 'Welcome to Nginx config' to avoid confusion:
   ```
 
 [Troubleshooting on EC2 instance](https://stackoverflow.com/questions/16054407/having-trouble-running-nginx-on-ec2-instance)
-## 10. Switch to Gunicorn
 
-## 10. Managing sessions with Tmux
+## 10. Switch to Gunicorn
+Todo
+
+## 11. Managing sessions with Tmux
 ```bash
 $sudo apt-get install screen tmux
 $screen -ls (list screen sessions)
