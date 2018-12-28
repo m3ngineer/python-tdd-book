@@ -148,7 +148,7 @@ Clone github repository onto your EC2 instance to keep your code and compure res
 2. in `<app>/settings.py` change `ALLOWED_HOSTS = ['*']`
 3. Migrate database `python manage.py migrate --noinput`
 
-## 9. Set up Nginx
+## 9. Set up Nginx and Gunicorn
 1. Install Nginx on Server
 
   ```bash
@@ -166,13 +166,13 @@ Clone github repository onto your EC2 instance to keep your code and compure res
     sever_name staging.engmatthew.com
 
     location /static {
-
+            alias /home/ubuntu/<git-repository-folder>/static;
     }
 
     location / {
-      proxy_pass http://localhost:8000
+            proxy_pass http://unix:/tmp/staging.engmatthew.socket;
+            }
     }
-  }
   ```
 4. Create a symlink to the config file to add it to the enabled sites using Debian/Ubuntu. The real config file is in `sites-available`, and a symlink is in `sites-enabled`, which makes it easier to switch sites on and off.
 
@@ -199,7 +199,47 @@ Can remove default 'Welcome to Nginx config' to avoid confusion:
 [Troubleshooting on EC2 instance](https://stackoverflow.com/questions/16054407/having-trouble-running-nginx-on-ec2-instance)
 
 ## 10. Switch to Gunicorn
-Todo
+
+1. `conda` or `pip install gunicorn`
+2. Provide path to a WSGI server, usually a function called `application`. `gunicorn tdd-python-book.wsgi:application`
+
+  ```bash
+  gunicorn <django-app-name>.wsgi:application
+  ```
+
+3. Get Nginx to serve static files by collecting static files
+
+  ```
+  python manage.py collectstatic --noinput
+  ```
+
+4. Add `location` directive to the config file
+
+
+5. Also, change location to use Unix socket domain so Nginx and Gunicorn can talk to each other by changing proxy settings
+
+  ``` sh
+  server {
+    listen 80;
+    sever_name staging.engmatthew.com
+
+    location /static {
+            alias /home/ubuntu/<git-repository-folder>/static;
+    }
+
+    location / {
+            proxy_pass http://unix:/tmp/staging.engmatthew.com.socket;
+            }
+    }
+  ```
+5. Reload Nginix and restart Gunicorn, telling it to listen on a socket instead of default port (otherwise use `gunicorn <project-name>.wsgi:application`)
+
+*python-tdd-book/*
+
+  ```bash
+  sudo systemctl reload nginx
+  gunicorn --bind \ unix:/tmp/staging.engmatthew.com.socket superlists.wsgi:application
+  ```
 
 ## 11. Managing sessions with Tmux
 ```bash
